@@ -33,9 +33,15 @@ class ProductTable extends Component {
   render() {
     const rows = [];
     let currentCategory = null;
-    const { products } = this.props;
+    const { products, filterText, inStock } = this.props;
 
     products.forEach((product) => {
+      if (product.name.indexOf(filterText) === -1) {
+        return;
+      }
+      if (inStock && !product.stocked) {
+        return;
+      }
       if (product.category !== currentCategory) {
         rows.push(
           <ProductCategoryRow
@@ -66,14 +72,31 @@ class ProductTable extends Component {
 }
 
 class SearchBar extends Component {
+  handleChangeText = (event) => {
+    this.props.onFilterTextChange(event.target.value);
+  };
+
+  handleChangeChecked = (event) => {
+    this.props.onCheckboxChange(event.target.checked);
+  };
+
   render() {
     const { filterText, inStock } = this.props;
     return (
       <form>
-        <input type="text" placeholder="Search..." value={filterText} />
+        <input
+          type="text"
+          placeholder="Search..."
+          value={filterText}
+          onChange={this.handleChangeText}
+        />
         <p>
-          <input type="checkbox" checked={inStock} /> Only show products in
-          stock
+          <input
+            type="checkbox"
+            checked={inStock}
+            onChange={this.handleChangeChecked}
+          />{" "}
+          Only show products in stock
         </p>
       </form>
     );
@@ -85,12 +108,30 @@ class FilterableProductTable extends Component {
     filterText: "",
     inStock: false,
   };
+
+  filterTextChange = (filterText) => {
+    this.setState({
+      filterText,
+    });
+  };
+
+  checkboxChange = (inStock) => {
+    this.setState({
+      inStock,
+    });
+  };
+
   render() {
     const { products } = this.props;
     const { filterText, inStock } = this.state;
     return (
       <div>
-        <SearchBar filterText={filterText} inStock={inStock} />
+        <SearchBar
+          filterText={filterText}
+          inStock={inStock}
+          onFilterTextChange={this.filterTextChange}
+          onCheckboxChange={this.checkboxChange}
+        />
         <ProductTable
           products={products}
           filterText={filterText}
