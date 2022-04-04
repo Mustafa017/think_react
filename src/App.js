@@ -67,11 +67,13 @@ class ProductTable extends Component {
 
 class SearchBar extends Component {
   render() {
+    const { filterText, inStock } = this.props;
     return (
       <form>
-        <input type="text" />
+        <input type="text" placeholder="Search..." value={filterText} />
         <p>
-          <input type="checkbox" /> Only show products in stock
+          <input type="checkbox" checked={inStock} /> Only show products in
+          stock
         </p>
       </form>
     );
@@ -79,12 +81,21 @@ class SearchBar extends Component {
 }
 
 class FilterableProductTable extends Component {
+  state = {
+    filterText: "",
+    inStock: false,
+  };
   render() {
     const { products } = this.props;
+    const { filterText, inStock } = this.state;
     return (
       <div>
-        <SearchBar />
-        <ProductTable products={products} />
+        <SearchBar filterText={filterText} inStock={inStock} />
+        <ProductTable
+          products={products}
+          filterText={filterText}
+          inStock={inStock}
+        />
       </div>
     );
   }
